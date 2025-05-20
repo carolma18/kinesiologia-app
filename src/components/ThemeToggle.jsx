@@ -1,9 +1,9 @@
 import React from 'react';
 
-function ThemeToggle({ toggleTheme, theme }) {
+function ThemeToggle({ theme, toggleTheme }) {
   return (
-    <button onClick={toggleTheme} className="theme-toggle-button">
-      {theme === 'light' ? 'Modo Oscuro' : 'Modo Claro'}
+    <button className="theme-toggle" onClick={toggleTheme}>
+      Modo {theme === 'light' ? 'Oscuro' : 'Claro'}
     </button>
   );
 }

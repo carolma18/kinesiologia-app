@@ -1,10 +1,10 @@
 import React from 'react';
 
-function SessionCounter({ count }) {
+function SessionCounter({ count, title }) { // Recibe un título ahora
   return (
     <div className="session-counter-container">
-      <h3>Total de Sesiones:</h3>
-      <p className="session-count-display">{count}</p>
+      <h3>{title}</h3> {/* Usa el título pasado */}
+      <div className="session-count-display">{count}</div>
     </div>
   );
 }

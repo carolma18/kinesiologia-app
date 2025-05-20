@@ -1,50 +1,92 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import CalendarComponent from './components/CalendarComponent';
-import SessionList from './components/SessionList';
 import SessionCounter from './components/SessionCounter';
+import SessionList from './components/SessionList';
 import ThemeToggle from './components/ThemeToggle';
 import WhoRegisteredSelect from './components/WhoRegisteredSelect';
+import KineProgressReport from './components/KineProgressReport';
 import './styles/App.css';
+import { getSessions, addSession, deleteSession } from './api/sheets';
+import { format, parseISO } from 'date-fns';
 
 function App() {
-  const [sessions, setSessions] = useState(() => {
-    // Cargar sesiones desde localStorage al iniciar
-    const savedSessions = localStorage.getItem('kinesiologiaSessions');
-    return savedSessions ? JSON.parse(savedSessions) : [];
-  });
-  const [whoRegistered, setWhoRegistered] = useState('Yudimar'); // Estado para quién registra
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [sessions, setSessions] = useState([]);
+  const [whoRegistered, setWhoRegistered] = useState('Yudimar');
   const [theme, setTheme] = useState(() => {
-    // Cargar tema desde localStorage al iniciar
-    const savedTheme = localStorage.getItem('kinesiologiaTheme');
-    return savedTheme || 'light';
+    const savedTheme = localStorage.getItem('theme');
+    return savedTheme === 'dark' ? 'dark' : 'light';
   });
 
-  // Guardar sesiones en localStorage cada vez que cambian
-  useEffect(() => {
-    localStorage.setItem('kinesiologiaSessions', JSON.stringify(sessions));
-  }, [sessions]);
+  const loadAllSessions = useCallback(async () => {
+    console.log("[App.jsx] Cargando todas las sesiones...");
+    try {
+      const fetchedSessions = await getSessions();
+      // Ordenar sesiones por fecha descendente
+      fetchedSessions.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setSessions(fetchedSessions);
+      console.log("[App.jsx] Sesiones cargadas exitosamente:", fetchedSessions.length, "sesiones.");
+    } catch (error) {
+      console.error("[App.jsx] Error al cargar sesiones:", error);
+    }
+  }, []);
 
-  // Aplicar la clase del tema al body
+  useEffect(() => {
+    loadAllSessions();
+  }, [loadAllSessions]);
+
   useEffect(() => {
     document.body.className = theme;
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const addSession = (date) => {
-    const newSession = {
-      id: Date.now(), // Un ID único para cada sesión
-      date: date.toISOString().split('T')[0], // Formato YYYY-MM-DD
-      registeredBy: whoRegistered,
-    };
-    setSessions((prevSessions) => [...prevSessions, newSession]);
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
   };
 
-  const deleteSession = (id) => {
-    setSessions((prevSessions) => prevSessions.filter((session) => session.id !== id));
+  const handleRegisterSession = async () => {
+    if (selectedDate && whoRegistered) {
+      const formattedDateForSheet = format(selectedDate, 'yyyy-MM-dd');
+      
+      console.log(`[App.jsx] Intentando registrar sesión para: ${formattedDateForSheet} por ${whoRegistered}`);
+      const newSession = await addSession(formattedDateForSheet, whoRegistered);
+
+      if (newSession) {
+        // Asegúrate de que el alert muestre la fecha que quieres
+        alert(`Sesión registrada para ${formattedDateForSheet} por ${whoRegistered}`);
+        await loadAllSessions();
+      } else {
+        alert('Error al registrar la sesión.');
+      }
+    } else {
+      alert('Por favor, selecciona una fecha y especifica quién registra.');
+    }
   };
 
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
+  const handleDeleteSession = async (sessionIdToDelete, rowIndex) => {
+    console.log("[App.jsx] Intentando eliminar sesión con ID:", sessionIdToDelete, "y rowIndex:", rowIndex);
+    const isDeleted = await deleteSession(rowIndex);
+
+    if (isDeleted) {
+      alert('Sesión eliminada correctamente.');
+      await loadAllSessions();
+    } else {
+      alert('Error al eliminar la sesión.');
+    }
   };
+
+  const sessionsForSelectedDate = selectedDate
+    ? sessions.filter(session => {
+        try {
+            const sessionDateFormatted = format(parseISO(session.date), 'yyyy-MM-dd');
+            const selectedDateFormatted = format(selectedDate, 'yyyy-MM-dd');
+            return sessionDateFormatted === selectedDateFormatted;
+        } catch (error) {
+            console.error(`[App.jsx] Error al parsear fecha de sesión '${session.date}':`, error);
+            return false;
+        }
+      })
+    : [];
 
   return (
     <div className={`App ${theme}`}>
@@ -53,28 +95,36 @@ function App() {
           <span>Control de Sesiones de Kinesiología</span>
         </h1>
         <p className="app-subtitle">
-          <span>Gestiona tus fechas de rehabilitación</span>
+          <span>Pinche Page - Gestionemos tus fechas de rehabilitación</span>
         </p>
-        <ThemeToggle toggleTheme={toggleTheme} theme={theme} />
+        <ThemeToggle theme={theme} toggleTheme={() => setTheme(theme === 'light' ? 'dark' : 'light')} />
       </header>
 
-      <main className="app-main">
-        <div className="input-section">
-          <WhoRegisteredSelect whoRegistered={whoRegistered} setWhoRegistered={setWhoRegistered} />
-          <p className="instruction">Haz click en una fecha del calendario para registrar una sesión con {whoRegistered}.</p>
+      <section className="input-section">
+        <WhoRegisteredSelect whoRegistered={whoRegistered} setWhoRegistered={setWhoRegistered} />
+        <p className="instruction">
+          Haz click en una fecha del calendario para registrar una sesión con {whoRegistered}.
+        </p>
+      </section>
+
+      <div className="content-grid">
+        <div className="calendar-wrapper">
+          <CalendarComponent
+            selectedDate={selectedDate}
+            handleDateChange={handleDateChange}
+            handleRegisterSession={handleRegisterSession}
+            sessions={sessions}
+          />
         </div>
 
-        <div className="content-grid">
-          <div className="calendar-container">
-            <CalendarComponent addSession={addSession} />
-          </div>
+        <div className="session-info-container">
+          <SessionCounter count={sessions.length} title="Total de Sesiones" />
+          <SessionCounter count={sessionsForSelectedDate.length} title="Sesiones para el día seleccionado" />
 
-          <div className="session-info-container">
-            <SessionCounter count={sessions.length} />
-            <SessionList sessions={sessions} onDeleteSession={deleteSession} />
-          </div>
+          <SessionList sessions={sessionsForSelectedDate} />
+          <KineProgressReport sessions={sessions} /> 
         </div>
-      </main>
+      </div>
     </div>
   );
 }

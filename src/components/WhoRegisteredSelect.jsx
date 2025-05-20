@@ -1,8 +1,8 @@
 import React from 'react';
 
 function WhoRegisteredSelect({ whoRegistered, setWhoRegistered }) {
-  const handleChange = (e) => {
-    setWhoRegistered(e.target.value);
+  const handleChange = (event) => {
+    setWhoRegistered(event.target.value);
   };
 
   return (
