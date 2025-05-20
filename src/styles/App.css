@@ -1,0 +1,390 @@
+.App {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1200px; /* Limita el ancho máximo para el contenido principal */
+  color: var(--text-color);
+  transition: all 0.3s ease-in-out;
+  padding: 0; /* Padding ya se maneja en el body, lo quitamos de App */
+  box-sizing: border-box;
+  align-items: center; /* Centra los elementos hijos horizontalmente */
+  justify-content: flex-start; /* Asegura que el contenido dentro de App se alinee al inicio (arriba) */
+  flex-grow: 1; /* Permite que .App se expanda si el body es un contenedor flex */
+}
+
+/* Encabezado */
+.app-header {
+  text-align: center; /* Centra el texto dentro del encabezado */
+  margin-top: 0; /* Aseguramos que no haya margen superior extra aquí */
+  margin-bottom: 40px; /* Mantén un buen espacio debajo del encabezado */
+  position: relative;
+  padding-bottom: 20px;
+  width: 100%; /* Ocupa todo el ancho disponible */
+}
+
+.app-title,
+.app-subtitle {
+  transition: all 0.3s ease;
+  display: block; /* Asegura que sean elementos de bloque para centrar con text-align */
+  color: var(--primary-color);
+  text-align: center; /* Centra el texto dentro de ellos */
+  width: 100%; /* Ocupa todo el ancho disponible para el texto */
+  margin: 0 auto; /* Centra el bloque mismo si hay espacio disponible */
+}
+
+.app-title span,
+.app-subtitle span {
+  transition: all 0.3s ease;
+}
+
+.app-title:hover span {
+  color: var(--secondary-color);
+  transform: translateY(-3px);
+}
+
+.app-subtitle:hover span {
+  color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.theme-toggle-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: var(--button-bg-color);
+  color: var(--button-text-color);
+  border: none;
+  padding: 8px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.theme-toggle-button:hover {
+  background-color: var(--button-hover-bg-color);
+  transform: scale(1.05);
+}
+
+/* Sección de entrada */
+.input-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 30px;
+  gap: 15px;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+.instruction {
+  font-style: italic;
+  color: var(--secondary-color);
+  text-align: center;
+}
+
+.who-registered-select-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.who-registered-select-container label {
+  font-weight: bold;
+}
+
+.who-registered-select-container select {
+  padding: 8px 12px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg-color);
+  color: var(--text-color);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.who-registered-select-container select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+/* Contenido principal de la cuadrícula */
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Una columna por defecto para móviles */
+  gap: 30px; /* Espacio entre el calendario y las sesiones */
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Calendario */
+.calendar-wrapper {
+  background-color: var(--card-bg-color);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: all 0.3s ease;
+  width: 100%;
+  max-width: 400px; /* Ancho máximo para el calendario */
+  margin: 0 auto; /* Centrar el calendario dentro de su columna */
+}
+
+/* Estilos de react-calendar (sobrescribir para que coincidan con el tema) */
+.react-calendar {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  line-height: 1.125em;
+  background-color: var(--card-bg-color);
+  color: var(--text-color);
+}
+
+.react-calendar__navigation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.react-calendar__navigation__label {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--primary-color);
+  padding: 0 5px;
+  white-space: nowrap; /* Evita que el texto se rompa en varias líneas */
+}
+
+.react-calendar__navigation__label button {
+    background: none;
+    color: var(--primary-color);
+    border: none;
+    font-weight: bold;
+    font-size: 1.2em;
+    padding: 0;
+    margin: 0;
+    cursor: default;
+}
+.react-calendar__navigation__label button:hover,
+.react-calendar__navigation__label button:focus {
+    background: none;
+    color: var(--primary-color);
+    cursor: default;
+}
+
+
+.react-calendar__navigation button {
+  color: var(--primary-color);
+  min-width: 44px;
+  background: none;
+  font-size: 1.6em;
+  margin-bottom: 0;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: var(--hover-bg-color);
+  color: var(--hover-text-color);
+  border-radius: 5px;
+}
+
+.react-calendar__tile {
+  padding: 10px 6.6667px;
+  background: none;
+  color: var(--text-color);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: var(--hover-bg-color);
+  border-radius: 5px;
+  color: var(--hover-text-color);
+}
+
+.react-calendar__tile--now {
+  background: var(--primary-color);
+  color: white;
+  border-radius: 5px;
+}
+
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: var(--button-hover-bg-color);
+  color: white;
+}
+
+/* Contenedor de información de sesiones */
+.session-info-container {
+  background-color: var(--card-bg-color);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+/* Contador de Sesiones */
+.session-counter-container {
+  text-align: center;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: var(--hover-bg-color);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.session-counter-container:hover {
+  background-color: var(--primary-color);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px var(--shadow-color);
+}
+
+.session-counter-container h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.session-counter-container:hover h3 {
+  color: white;
+}
+
+.session-count-display {
+  font-size: 2.5em;
+  font-weight: bold;
+  color: var(--primary-color);
+  transition: color 0.3s ease;
+}
+
+.session-counter-container:hover .session-count-display {
+  color: white;
+}
+
+/* Lista de Sesiones */
+.session-list-container h2 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: var(--primary-color);
+  text-align: center;
+}
+
+.session-list {
+  list-style: none;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+  border-top: 1px solid var(--border-color);
+  padding-top: 10px;
+}
+
+.session-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  margin-bottom: 8px;
+  background-color: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px var(--shadow-color);
+  transition: all 0.3s ease;
+}
+
+.session-item:hover {
+  background-color: var(--hover-bg-color);
+  box-shadow: 0 4px 10px var(--shadow-color);
+  transform: translateY(-2px);
+}
+
+.session-item:hover span {
+  color: var(--hover-text-color);
+}
+
+.session-item span {
+  font-weight: 500;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.session-item .registered-by {
+  font-size: 0.85em;
+  color: var(--secondary-color);
+  margin-left: 10px;
+  transition: color 0.3s ease;
+}
+
+.delete-button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-left: 15px;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+  transform: scale(1.1);
+}
+
+/* Responsive Design */
+@media (min-width: 768px) {
+  .content-grid {
+    grid-template-columns: 1fr 1.5fr; /* Dos columnas para pantallas más grandes */
+    gap: 50px; /* Aumenta el espacio entre las columnas en escritorio */
+  }
+
+  .calendar-wrapper {
+    max-width: none; /* Eliminar el límite de ancho para el calendario en escritorio */
+  }
+
+  .app-header {
+    text-align: center; /* Mantiene centrado en escritorio */
+  }
+
+  .theme-toggle-button {
+    top: 20px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-header {
+    margin-bottom: 20px;
+  }
+
+  .theme-toggle-button {
+    position: static;
+    margin-top: 20px;
+    width: 100%;
+  }
+
+  .App {
+    padding: 15px; /* Pequeño padding para móviles */
+  }
+
+  .calendar-wrapper,
+  .session-info-container {
+    padding: 15px;
+  }
+
+  .session-list {
+    max-height: 250px;
+  }
+}
